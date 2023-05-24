@@ -44,8 +44,8 @@ const getUserWithEmail = function (email) {
  */
 const getUserWithId = function (id) {
   const queryString = `
-    SELECT users.id FROM users
-    WHERE users.email = $1;
+    SELECT * FROM users
+    WHERE users.id = $1;
   `;
   return pool.query(queryString, id)
   .then (res => {
@@ -94,7 +94,22 @@ const addUser = function (user) {
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function (guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  const queryString = `
+    SELECT reservations.* 
+    FROM reservations
+    WHERE reservations.guest_id = $1
+    LIMIT $2;
+  `;
+  const values = [guest_id, limit];
+  return pool.query(queryString,values)
+    .then(res =>{
+      return res.row;
+    })
+    .catch (err => {
+      console.log('query error:', err)
+    });
+  
+  //return getAllProperties(null, 4);
 };
 
 /// Properties
